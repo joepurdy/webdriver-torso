@@ -1,11 +1,12 @@
-usage="$(basename "$0") [-h] [-v <number>] [-s <number>] -- program to generate Webdriver Torso-esque video clips
+usage="$(basename "$0") [-h] [-v <number>] [-s <number>] [-t <text>] -- program to generate Webdriver Torso-esque video clips
 
 where:
     -h  show this help text
     -v  set the number of videos to generate (default: 1)
-    -s  set the number of slides to generate for each video (default: 10)"
+    -s  set the number of slides to generate for each video (default: 10)
+    -t  set the text that appears before each slide number (default: aqua.flv)" 
 
-while getopts ':hv:s:' option; do
+while getopts ':hv:s:t:' option; do
   case "$option" in
     h) echo "$usage"
        exit
@@ -13,6 +14,8 @@ while getopts ':hv:s:' option; do
     v) VIDEOS=$OPTARG
        ;;
 	s) SLIDES=$OPTARG
+       ;;
+	t) TEXT=$OPTARG
        ;;
     :) printf "missing argument for -%s\n" "$OPTARG" >&2
        echo "$usage" >&2
@@ -32,24 +35,25 @@ while [ ${C1:-0} -lt ${VIDEOS:-1} ]; do
 
 	C2=0
 
-	# Generate random 6 digit video ID
-	VIDEO=$(python -c "import random; print random.randint(100000,999999)")
+	# Generate random 6 digit video ID and delete tmp file
+	VIDEO=$(mktemp XXXXXX)
+	rm $VIDEO
 
 	# Generate slide audio and video in loop
 	while [ ${C2:-0} -lt ${SLIDES:-10} ]; do
 		# Generate random numbers in range for SINE wave frequency and rectangle coordinates
-		SINE=$(python -c "import random; print random.randint(300,3300)")
-		rec1_x1=$(python -c "import random; print random.randint(0,640)")
-		rec1_x2=$(python -c "import random; print random.randint(0,640)")
-		rec1_y1=$(python -c "import random; print random.randint(0,330)")
-		rec1_y2=$(python -c "import random; print random.randint(0,330)")
-		rec2_x1=$(python -c "import random; print random.randint(0,640)")
-		rec2_x2=$(python -c "import random; print random.randint(0,640)")
-		rec2_y1=$(python -c "import random; print random.randint(0,330)")
-		rec2_y2=$(python -c "import random; print random.randint(0,330)")
+		SINE=$((RANDOM%3300+300))
+		rec1_x1=$((RANDOM%640+0))
+		rec1_x2=$((RANDOM%640+0))
+		rec1_y1=$((RANDOM%330+0))
+		rec1_y2=$((RANDOM%330+0))
+		rec2_x1=$((RANDOM%640+0))
+		rec2_x2=$((RANDOM%640+0))
+		rec2_y1=$((RANDOM%330+0))
+		rec2_y2=$((RANDOM%330+0))
 		
 		# Uses ImageMagick library to generate slide pictures (http://imagemagick.org/)
-		convert -size '640x360' xc:white -fill red -draw "rectangle ${rec1_x1},${rec1_y1},${rec1_x2},${rec1_y2}" -fill blue  -draw "rectangle ${rec2_x1},${rec2_y1},${rec2_x2},${rec2_y2}" -font 'Courier-Bold' -fill black -draw "text 10,340 'aqua.flv - Slide 000${C2}'" ./process/${C2}.png
+		convert -size '640x360' xc:white -fill red -draw "rectangle ${rec1_x1},${rec1_y1},${rec1_x2},${rec1_y2}" -fill blue  -draw "rectangle ${rec2_x1},${rec2_y1},${rec2_x2},${rec2_y2}" -font 'Courier-Bold' -fill black -draw "text 10,340 '${TEXT-aqua.flv} - Slide 000${C2}'" ./process/${C2}.png
 		
 		# Uses sox library to generate a sine wave (http://sox.sourceforge.net/)
 		sox -n ./process/${C2}.wav synth 1 sine $SINE
