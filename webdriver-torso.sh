@@ -1,3 +1,4 @@
+#!/bin/sh
 usage="$(basename "$0") [-h] [-v <number>] [-s <number>] [-t <text>] -- program to generate Webdriver Torso-esque video clips
 
 where:
@@ -53,7 +54,7 @@ while [ ${C1:-0} -lt ${VIDEOS:-1} ]; do
 		rec2_y2=$((RANDOM%330+0))
 		
 		# Uses ImageMagick library to generate slide pictures (http://imagemagick.org/)
-		convert -size '640x360' xc:white -fill red -draw "rectangle ${rec1_x1},${rec1_y1},${rec1_x2},${rec1_y2}" -fill blue  -draw "rectangle ${rec2_x1},${rec2_y1},${rec2_x2},${rec2_y2}" -font 'Courier-Bold' -fill black -draw "text 10,340 '${TEXT-aqua.flv} - Slide 000${C2}'" ./process/${C2}.png
+		convert -size '640x360' xc:white -fill blue -draw "rectangle ${rec1_x1},${rec1_y1},${rec1_x2},${rec1_y2}" -fill red -draw "rectangle ${rec2_x1},${rec2_y1},${rec2_x2},${rec2_y2}" -font 'Noto-Mono' -fill black -draw "text 10,340 '${TEXT-aqua.flv} - Slide 000${C2}'" ./process/${C2}.png
 		
 		# Uses sox library to generate a sine wave (http://sox.sourceforge.net/)
 		sox -n ./process/${C2}.wav synth 1 sine $SINE

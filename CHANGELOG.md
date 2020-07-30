@@ -1,6 +1,13 @@
 # webdrivertorso.sh Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.0.0 - 2020-07-29
+### Changed
+- Corrected error where the blue rectangle would overlap the red rectangle. In real Webdriver Torso videos red ALWAYS overlaps blue.
+
+### Added
+- Created a Dockerfile to streamline dependency installation
+
 ## 0.0.2 - 2015-12-13
 ### Changed
 - Removed python dependancy by replacing random number generation with built in `$RANDOM` property
